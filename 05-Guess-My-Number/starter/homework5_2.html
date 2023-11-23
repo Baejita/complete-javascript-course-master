@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+   <html lang="en">
+   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+ <style>
+   table,
+   tr,
+   td {
+     border: 1px solid rgb(255, 255, 255)
+   }
+ </style>
+
+
+   </head>
+   <body>
+    <!-- <div id="resultDisplay"></div> -->
+   
+    <table>
+      <tr id="rowDisplay"></tr>
+      <tr id="rowDisplay2"></tr>
+    </table>
+
+    <h1 id="today-cases-all"></h1>
+    <script>
+        const covidData =[]
+       
+       
+            //   axios.get("https://covid19.ddc.moph.go.th/api/Cases/today-cases-all").then(function (response) {
+            //     const country=[]
+            //     country.push(response.data[0])
+            //     covidData.push({country})
+              
+            //     let totalCountry = covidData[1].country[0].total_case
+            //     console.log(totalCountry);
+
+            let country=[]
+            let death = []
+            //   })
+            axios.get("https://covid19.ddc.moph.go.th/api/Cases/today-cases-all").then(function (response) {
+                
+                country.push(response.data[0])
+                covidData.push({country})
+              
+                let totalCountry = covidData[1].country[0].total_case
+               
+              
+              
+                
+               
+
+                let temp= ''
+                temp += "<tr>";
+            temp += "<td>" + 'total death' + "</td>";
+            temp += "<td>" + totalCountry.toString() + "</td></tr>";
+            
+            
+                document.getElementById("rowDisplay").innerHTML = temp;
+  
+                
+              })
+             
+              axios.get("https://covid19.ddc.moph.go.th/api/Deaths/weekly-deaths-line-lists").then(function (response) {
+                // console.log(response.data)
+            
+                death.push(response.data[0])
+                covidData.push({death})
+                console.log(covidData)
+                // console.log(covidData[0].death[0])
+                // let newCountry = covidData.country.flat()
+               
+               
+
+
+            //     let rowDisplay = document.getElementById('rowDisplay');
+         
+            // for (let i = 0; i < covidData[0].death[0].length; i++) {
+            // let number =
+           
+           //}
+                // rowDisplay.innerHTML = textHtml;
+                
+                let updateDate = covidData[0].death[0].update_date
+              
+               
+                let age = covidData[0].death[0].age;
+
+                let temp= ''
+                temp += "<tr>"
+            temp += "<td>" + 'uptodate'+ "</td>";
+            temp += "<td>" + updateDate.toString() + "</td></tr>";
+            temp += "<tr>"
+            temp += "<td>" + 'age'+ "</td>";
+            temp += "<td>" + age.toString() + "</td></tr>";
+            
+          
+                document.getElementById("rowDisplay2").innerHTML = temp;
+  
+
+              })
+             
+
+
+             
+            </script>
+   </body>
+   </html>
