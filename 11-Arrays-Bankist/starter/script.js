@@ -61,9 +61,12 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = '';
-  movements.forEach(function (mov, i) {
+
+    const movs = sort ? movements.slice().sort((a,b) => a -b) :movements; 
+
+  movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
     const html = `
@@ -149,13 +152,16 @@ btnLogin.addEventListener('click', function (e) {
   //ทำให้เวลากดแล้ว เคอร์เซอร์ไม่อยู่ในช่องนั้น ๆ
   inputLoginPin.blur();
   //Display Movement ทำให้หน้าจอแสดงเพาะไปลดตัวปิดลง
-  containerApp.style.opacity = 100;
-  //display balance
-  //display summary
 
-  displayMovements(currentAccount.movements);
-  calcDisplayBalance(currentAccount);
-  calDisplaySummary(currentAccount);
+  
+  containerApp.style.opacity = 100;
+  // //display balance
+  // //display summary
+  updateUI(currentAccount);
+  // displayMovements(currentAccount.movements);
+  // calcDisplayBalance(currentAccount);
+  // calDisplaySummary(currentAccount);
+  
 });
 
 btnTransfer.addEventListener('click', function (e) {
@@ -217,9 +223,18 @@ btnClose.addEventListener('click', function (e){
   }
 
   inputCloseUsername.value = inputClosePin.value = '';
-
-
 });
+
+//เนื่องจากเราจะต้องสร้างตัวแปรเพื่อตรวจสอบว่าถูกจัดเรียงหรือไม่
+let sorted = false;
+
+  btnSort.addEventListener('click', function (e){
+    e.preventDefault();
+    displayMovements(currentAccount.movements, !sorted);
+    sorted = !sorted;
+    //ทำสิ่งที่ตรงข้ามกับ sorted
+  
+  })
 
 
 
@@ -415,17 +430,16 @@ console.log(movements);
 //return < 0 A,B  (Keep order)
 //returnt > 0 B,A (Sitch order)
 //จากน้อยไปมากกกกกก 
-movements.sort((a,b) => {
-  if(a > b ) return 1; //ตัวเลขสมมติให้มากกว่า 0 
-  if(a < b )return -1;
-});
+// movements.sort((a,b) => {
+//   if(a > b ) return 1; //ตัวเลขสมมติให้มากกว่า 0 
+//   if(a < b )return -1;
+// });
+
+movements.sort((a,b) => a - b);
 console.log(movements);
 
 //จากมากไปน้อย
-movements.sort((a,b) => {
-  if(a > b ) return -1; //ตัวเลขสมมติให้มากกว่า 0 
-  if(a < b )return 1;
-});
+movements.sort((a,b) => b - a);
 console.log(movements);
 
 // const accountMovments = accounts.map(acc => acc.movements)
