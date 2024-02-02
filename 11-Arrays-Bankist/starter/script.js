@@ -412,35 +412,96 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 const eurToUsd = 1.1;
 
-//Flat and flatMap
-const arr = [[1,2,3] , [4,5,6] ,7 , 8];
-//console.log(arr.flat());
+//--------------------------//
+//Exercise 1 
+//วิธีหาผลรวมทั้งหมดของตัวเงินในบัญชี sum
+const bankDepositSum = accounts.flatMap( acc => acc.movements).filter(mov => mov > 0).reduce((acc, mov) => acc + mov, 0);
 
-const arrdeep = [[[1,2],3] , [4, [5,6]] ,7 , 8];
+console.log(bankDepositSum);
+
+//--------------------------//
+//Exercise 2 การหาจำนวนสิ่งที่มีอยู่กี่ อัน เช่นมี เลขทีีมากกว่า 1000 กี่ตัว
+const numDeposits1000 = accounts.flatMap( acc => acc.movements).reduce((count, cur ) => (cur >= 1000 ? count + 1:count), 0)
+
+const numDeposits10002 = accounts.flatMap( acc => acc.movements).reduce((count, cur ) => (cur >= 1000 ? ++count:count), 0)
+// วีธีที่ง่ายกว่าคคือ
+const numDeposits1000Easy = accounts.flatMap( acc  => acc.movements).filter(mov => mov >=1000).length
+console.log(numDeposits1000, numDeposits1000Easy,numDeposits10002);
+//prefix ++
+let a = 10;
+console.log(++a);
+
+//--------------------------//
+//Exercise 3
+
+
+
+// const arr = [1,2,3,4,5,6,7,];
+// console.log(new Array(1,2,3,4,5,6,7));
+
+// //เราสร้างช่่องว่างตามจำนวน ในวงเล็บได้ดังตัวอยย่าง
+// const x = new Array(7);
+// console.log(x);
+
+// x.fill(1,3 ,5); //fill (เลขที่เติม , เริ่ม index ที่ , ถึง index ที่) (7) ผลลัพธ์ที่ได้ [empty × 3, 1, 1, empty × 2]
+// console.log(x); //ผลลัพธ์ที่ได้ [empty × 3, 1, 1, empty × 2]
+
+// arr.fill(23, 2,6)
+// console.log(arr); //(7) [1, 2, 23, 23, 23, 23, 7]
+
+
+// //ARRAY.from
+// const y = Array.from({length: 7}, () => 1); //ใส่ ความยาว
+// console.log(y); //(7) [1, 1, 1, 1, 1, 1, 1] วิธีนี้ดีกว่าการเติม
+ 
+// const z = Array.from({length: 7 }, (_, i) => i+1)
+// console.log(z); //(7) [1, 2, 3, 4, 5, 6, 7]
+
+
+// // const hundred = Array.from({length:100}, (_,i) => i+1);
+// // console.log(hundred);
+
+
+// //การนำไปใช้จริง 
+
+// labelBalance.addEventListener('click', function() {
+// const movementsUI = Array.from(document.querySelectorAll('.movements__value'),el => Number(el.textContent.replace("€", '')));
+// console.log(movementsUI);
+// }) // ผลลัพธ์ (8) ['1300 ', '70 ', '-130 ', '-650 ', '3000 ', '-400 ', '450 ', '200 ']
+
+
+
+
+
+// //Flat and flatMap
+// const arr = [[1,2,3] , [4,5,6] ,7 , 8];
+// //console.log(arr.flat());
+
+// const arrdeep = [[[1,2],3] , [4, [5,6]] ,7 , 8];
 //console.log(arrdeep.flat(2)); //ใส่เลขเข้าไปในวงเล็บแฟลทเพ่อกำหนดความลึกเข้าไปใน array
 
-//Name เรียงตามตัวอักษร 
-const owners = ['Jonas', 'Zach', 'Adam', 'Marthas'];
-console.log(owners.sort());
+// //Name เรียงตามตัวอักษร 
+// const owners = ['Jonas', 'Zach', 'Adam', 'Marthas'];
+// console.log(owners.sort());
 
-//Numbers แปลงตัวเลขให้เป็น อักษร คือจาก - และจาก 1 ไป
-console.log(movements);
+// //Numbers แปลงตัวเลขให้เป็น อักษร คือจาก - และจาก 1 ไป
+// console.log(movements);
 
-//ให้เรียยงลำดัับจากน้อยไปหามากโดยใช้ฟังก์ชั่น 
-//return < 0 A,B  (Keep order)
-//returnt > 0 B,A (Sitch order)
-//จากน้อยไปมากกกกกก 
-// movements.sort((a,b) => {
-//   if(a > b ) return 1; //ตัวเลขสมมติให้มากกว่า 0 
-//   if(a < b )return -1;
-// });
+// //ให้เรียยงลำดัับจากน้อยไปหามากโดยใช้ฟังก์ชั่น 
+// //return < 0 A,B  (Keep order)
+// //returnt > 0 B,A (Sitch order)
+// //จากน้อยไปมากกกกกก 
+// // movements.sort((a,b) => {
+// //   if(a > b ) return 1; //ตัวเลขสมมติให้มากกว่า 0 
+// //   if(a < b )return -1;
+// // });
 
-movements.sort((a,b) => a - b);
-console.log(movements);
+// movements.sort((a,b) => a - b);
+// console.log(movements);
 
-//จากมากไปน้อย
-movements.sort((a,b) => b - a);
-console.log(movements);
+// //จากมากไปน้อย
+// movements.sort((a,b) => b - a);
+// console.log(movements);
 
 // const accountMovments = accounts.map(acc => acc.movements)
 // console.log(accountMovments);
