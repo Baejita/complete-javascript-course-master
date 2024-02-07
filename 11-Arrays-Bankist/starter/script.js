@@ -417,22 +417,43 @@ const eurToUsd = 1.1;
 //วิธีหาผลรวมทั้งหมดของตัวเงินในบัญชี sum
 const bankDepositSum = accounts.flatMap( acc => acc.movements).filter(mov => mov > 0).reduce((acc, mov) => acc + mov, 0);
 
-console.log(bankDepositSum);
+// console.log(bankDepositSum);
 
 //--------------------------//
 //Exercise 2 การหาจำนวนสิ่งที่มีอยู่กี่ อัน เช่นมี เลขทีีมากกว่า 1000 กี่ตัว
-const numDeposits1000 = accounts.flatMap( acc => acc.movements).reduce((count, cur ) => (cur >= 1000 ? count + 1:count), 0)
+// const numDeposits1000 = accounts.flatMap( acc => acc.movements).reduce((count, cur ) => (cur >= 1000 ? count + 1:count), 0)
 
-const numDeposits10002 = accounts.flatMap( acc => acc.movements).reduce((count, cur ) => (cur >= 1000 ? ++count:count), 0)
-// วีธีที่ง่ายกว่าคคือ
-const numDeposits1000Easy = accounts.flatMap( acc  => acc.movements).filter(mov => mov >=1000).length
-console.log(numDeposits1000, numDeposits1000Easy,numDeposits10002);
-//prefix ++
-let a = 10;
-console.log(++a);
+// const numDeposits10002 = accounts.flatMap( acc => acc.movements).reduce((count, cur ) => (cur >= 1000 ? ++count:count), 0)
+// // วีธีที่ง่ายกว่าคคือ
+// const numDeposits1000Easy = accounts.flatMap( acc  => acc.movements).filter(mov => mov >=1000).length
+// console.log(numDeposits1000, numDeposits1000Easy,numDeposits10002);
+// //prefix ++
+// let a = 10;
+// console.log(++a);
 
 //--------------------------//
-//Exercise 3
+//Exercise 3 //ต้องการคำนวณผลรวมพร้อมกันในครวเดียว
+// const {deposits, withdrawals} = accounts.flatMap(acc=> acc.movements).reduce((sums, cur) => {
+//   // cur>0? sums.deposits += cur : sums.withdrawals += cur;
+//   sums[cur > 0 ? 'deposits' : 'withdrawals'] += cur;
+//    return sums; }  ,{deposits: 0, withdrawals:0} )
+
+// console.log(deposits, withdrawals);
+
+// //Exercise 4 // This Is a Nice Title
+// const convertTitleCase = function (title) {
+//   const capitzalize = str => str[0].toUpperCase() + str.slice(1); //ทำให้ตัวแรกเป็นอักษรตัวใหญ่ ทุกคำ
+
+
+//   const exceptions = ['a', 'an', 'the', 'but', 'or', 'on', 'in', 'with'];
+
+//   const titleCase = title.toLowerCase().split(' ').map(word => (exceptions.includes(word)? word : capitzalize(word))).join(' '); //ความหมายถือ คำนั้นมีอยู่ใน exeptions หรือไม่ ถ้ามี คืนคำนั้นกลับออกมา ถ้าไม่มีให้แปลงเป็น ตัวแรกตัวใหญ่
+//   return capitzalize(titleCase);
+// };
+
+// console.log(convertTitleCase('this is a nice title'));
+// console.log(convertTitleCase('this is a LONG title but not too long'));
+// console.log(convertTitleCase('and here is another title with an EXAMPLE'));
 
 
 
@@ -608,3 +629,54 @@ console.log(++a);
 //   .reduce((acc, mov) => acc + mov, 0);
 
 // console.log(totalDepositsUSD);
+
+//Challenge 4 of ARRAY 
+const dogs = [
+  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+  { weight: 8, curFood: 200, owners: ['Matilda'] },
+  { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+  { weight: 32, curFood: 340, owners: ['Michael'] },
+  ];
+
+  //recommendedFood = weight ** 0.75 * 28. (The result is in grams of food, and the weight needs to be in kg
+  // const recommendedFood = dogs.weight.map()
+
+  //1. หาขนาด
+  dogs.forEach(dog => dog.recFood =Math.trunc(dog.weight ** 0.75 * 28))
+
+  console.log(dogs);
+
+  //2. จะคืนค่า จริงหรือเท็จ ออกมา 
+  const dogSarah = dogs.find(dog => dog.owners.includes('Sarah'))
+  console.log(dogSarah);
+  console.log(`Sarah's dog is eating ${dogSarah.curFood > dogSarah.recFood ? 'much': 'little'}`);
+
+  //3. 
+  const ownersEatTooMuch = dogs.filter(dog =>dog.curFood > dog.recFood ).flatMap(dog => dog.owners);
+  console.log(ownersEatTooMuch);
+
+  const ownersEatTooLittle = dogs.filter(dog =>dog.curFood < dog.recFood ).flatMap(dog => dog.owners);
+  console.log(ownersEatTooLittle); 
+
+  //4.
+ // "Matilda and Alice and Bob's dogs eat too much!" and "Sarah and John and Michael's dogs eat too little!"
+
+ console.log(`${ownersEatTooMuch.join(' and ')}'s dogs eat too much!"`);
+ console.log(`${ownersEatTooLittle.join(' and ')}'s dogs eat too little!"`);
+
+ //5.
+console.log(dogs.some(dog=> dog.curFood === dog.recFood));
+
+//6. หาว่ามีสุนุขที่กิน ไม่ตรงตามมาตรฐานหรือไม่ 
+const checkEatingOkay = dog => dog.curFood > dog.recFood * 0.9 && dog.curFood < dog.recFood * 1.1
+
+console.log(dogs.some(checkEatingOkay));
+
+//7. new array for too much
+console.log(dogs.filter(checkEatingOkay));
+
+//8. sort it by recommended food portion in an ascending order
+
+const dogsSorted = dogs.slice().sort((a,b) => a.recFood - b.recFood)
+console.log(dogsSorted);
+//มันเป็นเรื่องสนุกมากที่ได้สร้างร่วมกับคุณ ดังนั้นฉันหวังว่าคุณจะภูมิใจในสิ่งที่คุณประสบความสำเร็จที่นี่ และขอแสดงความยินดีกับคุณที่ได้มาไกลขนาดนี้ และมั่นคงยาวนานไปด้วยกัน
