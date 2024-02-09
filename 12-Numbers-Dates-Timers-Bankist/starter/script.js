@@ -81,10 +81,10 @@ const inputClosePin = document.querySelector('.form__input--pin');
 /////////////////////////////////////////////////
 // Functions
 
-const displayMovements = function (movements, sort = false) {
+const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
 
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  const movs = sort ? acc.movements.slice().sort((a, b) => a - b) : acc.movements;
 
   movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
@@ -94,7 +94,7 @@ const displayMovements = function (movements, sort = false) {
         <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-        <div class="movements__value">${mov}€</div>
+        <div class="movements__value">${mov.toFixed(2)}€</div>
       </div>
     `;
 
@@ -104,19 +104,19 @@ const displayMovements = function (movements, sort = false) {
 
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${acc.balance}€`;
+  labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
 };
 
 const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes}€`;
+  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
 
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out)}€`;
+  labelSumOut.textContent = `${Math.abs(out).toFixed(2)}€`;
 
   const interest = acc.movements
     .filter(mov => mov > 0)
@@ -126,7 +126,7 @@ const calcDisplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest}€`;
+  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
 };
 
 const createUsernames = function (accs) {
@@ -142,7 +142,7 @@ createUsernames(accounts);
 
 const updateUI = function (acc) {
   // Display movements
-  displayMovements(acc.movements);
+  displayMovements(acc);
 
   // Display balance
   calcDisplayBalance(acc);
@@ -150,10 +150,34 @@ const updateUI = function (acc) {
   // Display summary
   calcDisplaySummary(acc);
 };
+let currentAccount;
+///// ---- FAKE always logged in ---- 
+
+currentAccount = account1;
+updateUI(currentAccount);
+containerApp.style.opacity = 100;
+
+////
+const now = new Date();
+const day = `${now.getDate()}`.padStart(2, 0);
+const month = `${now.getMonth()+ 1}`.padStart(2, 0); ;
+const year = now.getFullYear();
+const hour = now.getHours();
+const min = now.getMinutes();
+
+labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+
+////day/month./year
+
+
+
+
+
+
 
 ///////////////////////////////////////
 // Event handlers
-let currentAccount;
+
 
 btnLogin.addEventListener('click', function (e) {
   // Prevent form from submitting
@@ -164,7 +188,7 @@ btnLogin.addEventListener('click', function (e) {
   );
   console.log(currentAccount);
 
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+  if (currentAccount?.pin === +inputLoginPin.value) {
     // Display UI and message
     labelWelcome.textContent = `Welcome back, ${
       currentAccount.owner.split(' ')[0]
@@ -182,7 +206,7 @@ btnLogin.addEventListener('click', function (e) {
 
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
-  const amount = Number(inputTransferAmount.value);
+  const amount = +inputTransferAmount.value;
   const receiverAcc = accounts.find(
     acc => acc.username === inputTransferTo.value
   );
@@ -206,7 +230,7 @@ btnTransfer.addEventListener('click', function (e) {
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = Number(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     // Add movement
@@ -223,7 +247,7 @@ btnClose.addEventListener('click', function (e) {
 
   if (
     inputCloseUsername.value === currentAccount.username &&
-    Number(inputClosePin.value) === currentAccount.pin
+    +inputClosePin.value === currentAccount.pin
   ) {
     const index = accounts.findIndex(
       acc => acc.username === currentAccount.username
@@ -251,3 +275,100 @@ btnSort.addEventListener('click', function (e) {
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
+
+//เลข ฐาน 10 จะแม่นในจำนวนเต็มแต่พอเศษส่วน จะมีหลังจุดที่เกิดขึ้นได้เพราะ จะมอง จุดทศนิยมเศษส่วน
+//เลขฐาน 2 จะมองแค่ 0 1
+// console.log(1/10 + 2/10);
+// console.log(Number('56'));
+
+
+// //ส่วนการที่จะเปลี่ยยนตัวหนังสือเป็นตัวเลข จะสามารถ ใส่เครื่องหมาย + หน้า '' ได้เลย
+// console.log(typeof(+'56'));
+
+// //parsing แสดงออกมา ** แต่ต้องขึ้นต้นด้วยตัวเลข เช่นค่าที่มาจาก CSS จะอ่านออกมาเป็นตัวเลข ใช้คำสั่งตัวเลข
+// console.log(Number.parseInt('30px' ,10));
+// console.log(Number.parseInt('px30', 10)); // แบบนี้ไม่ได้
+
+// console.log(Number.parseInt('2.5rem')); //  2
+// console.log(Number.parseFloat('2.5rem'));   // 2.5
+
+// //Number.isNaN 
+
+// //วิธีเชคว่า ค่าไหนเป็นตัวเลข ดีที่สุดคือ Number.isFinite
+
+// console.log(Number.isFinite(20));
+// console.log(Number.isFinite('20'));
+// console.log(Number.isFinite(+'20x'));
+// console.log(Number.isFinite(2 / 0));
+
+// console.log(Number.isInteger(23));  //true
+// console.log(Number.isInteger('23'));  //false
+
+//------------------------------------------------------//
+
+//แส8วร์รูท 
+
+// console.log(Math.sqrt(100));
+// console.log(100 ** (1/2));  //วิธีการแบบไม่ใช้ Math
+
+// console.log(Math.max(2,5,15,11,6,1));
+// console.log(Math.max(2,5,'15',11,6,1));
+// console.log(Math.max(2,5,'15px',11,6,1)); //NAN
+
+// console.log(Math.min(2,5,'15',11,6,1));
+
+// //การคำนวณพื้นที่ วงกลม pR^2
+// console.log(Math.PI * Number.parseFloat('10px') **2); //ไพน์ อาร์ กำลัง 2 
+
+// //การกำหนดตัวสุ่มให้อยู่ในข่วงโดย สร้าง ฟังก์ขั่น
+// const randomInt = (min,max) => Math.trunc(Math.random() * (max - min ) + 1) + min;
+// console.log(randomInt(1, 20 ));
+
+// //การปัดเศษ trunc คือตัดเศษออก
+// //round ปัดเศษตามจุดทศนิยม และ 
+// //ceil คือ การปัดขึ้น และ 
+// //floor ปัดเศษ ลง 
+
+// console.log(Math.floor(-56.22));//  -57
+// console.log(Math.trunc(-56.22)); //  -56
+
+// //Rouding decimal 
+// console.log((2.7).toFixed(0)); // จะได้ผลลัพธ์ออกเป็น str
+// console.log(+(2.777669).toFixed(3));
+
+//การทดสอบตัวดำเนินการอื่นๆ  
+//การทำให้สีแต่ละ แถว 
+// labelBalance.addEventListener('click', function (){
+//   [...document.querySelectorAll('.movements__row')].forEach(function (row, i) {
+//     if ( i % 2 === 0 ) row.style.backgroundColor = 'orangered';
+//     if ( i % 3 === 0 ) row.style.backgroundColor = 'blue';
+//   });
+// });
+
+// const diameter = 287_460_000_000;
+// console.log(diameter);
+
+// //ต้องระวังการนำไป แปลงจาก ตัวอักษรเป็นตัวเลขจะผิดพลาดได้
+
+// //Bigint ปกติมันจะจำกัด จำนวนเลขในการแสดงผลหรือคำนวณ แต่ถ้าเราใส่ n ไว้หลังจำนวนเลข จะแสดงทั้งหมด
+
+// console.log(12113132323145584288324020492402n);
+
+//create A DATE
+
+// const now = new Date();
+// console.log(now);
+
+// console.log(new Date('December 24, 2015'));
+
+const future = new Date(2037, 10, 19, 15, 23);
+console.log(future);
+console.log(future.getFullYear(), future.getMonth(), future.getDate());
+console.log((future.toISOString()));
+console.log(future.getTime());
+console.log(new Date(2142231780000)); //Thu Nov 19 2037 15:23:00 GMT+0700 (Indochina Time)
+console.log(Date.now());
+
+future.setFullYear(2040);
+console.log(future);
+
