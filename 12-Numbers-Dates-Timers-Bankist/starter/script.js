@@ -157,12 +157,12 @@ const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
+  labelSumIn.textContent = formatCurrency(incomes, acc.locale, acc.currency)
 
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out).toFixed(2)}€`;
+  labelSumOut.textContent = formatCurrency(Math.abs(out), acc.locale, acc.currency)
 
   const interest = acc.movements
     .filter(mov => mov > 0)
@@ -172,7 +172,7 @@ const calcDisplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+  labelSumInterest.textContent = formatCurrency(interest, acc.locale, acc.currency)
 };
 
 const createUsernames = function (accs) {
@@ -196,12 +196,47 @@ const updateUI = function (acc) {
   // Display summary
   calcDisplaySummary(acc);
 };
-let currentAccount;
+
+//LOG out TIMER
+const startLogOUTTImer= function(){
+  const trick = function(){
+    const min = String(Math.trunc(time / 60)).padStart(2,0);
+    const sec = String(time % 60).padStart(2,0);
+  
+    //In each all, print the remaining time to UI 
+    labelTimer.textContent = `${min}:${sec}`;
+
+    //decreas 1s
+      
+
+    //When 0 seconds , Top timer and log out user
+    if(time === 0 ) {
+      clearInterval(timer);
+      labelWelcome.textContent = `Log in to get started
+      `;
+      containerApp.style.opacity = 0;
+    }
+    time--;
+  }
+  
+  
+  //set time to 5 minutes
+  let time = 120;
+  //Call the timer ever seccond 
+  trick();
+  const timer = setInterval(trick, 1000); //วิธีทำให้ไม่ดีเลย์และนับเวลาทันทีหลังจาก login 
+  return timer;
+
+} ;
+
+
+
+let currentAccount, timer;
 ///// ---- FAKE always logged in ---- 
 
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 100;
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 100;
 
 
 
@@ -258,6 +293,11 @@ labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale, options).
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
 
+
+    //timer ตรวจสอบว่ามีการจับเวลาอยู่หรือไม่ ถ้ามี ให้เคลียร์
+  if(timer) clearInterval(timer)
+  timer = startLogOUTTImer();
+
     // Update UI
     updateUI(currentAccount);
   }
@@ -285,6 +325,10 @@ btnTransfer.addEventListener('click', function (e) {
     receiverAcc.movementsDates.push(new Date().toISOString());
     // Update UI
     updateUI(currentAccount);
+
+    //reset the timer
+    clearInterval(timer)
+    timer = startLogOUTTImer();
   }
 });
 
@@ -295,14 +339,18 @@ btnLoan.addEventListener('click', function (e) {
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     // Add movement
-    currentAccount.movements.push(amount);
+   setTimeout(function(){ currentAccount.movements.push(amount);
 
     //Add Loan date 
     currentAccount.movementsDates.push(new Date().toISOString());
 
     // Update UI
-    updateUI(currentAccount);
-  }
+    updateUI(currentAccount);}, 2500);
+
+      //reset the timer
+      clearInterval(timer)
+      timer = startLogOUTTImer();
+  };
   inputLoanAmount.value = '';
 });
 
@@ -450,16 +498,37 @@ btnSort.addEventListener('click', function (e) {
 // console.log(day1);
 
 
-const num = 24256324.23;
-const options = {
-  style: "currency",
-  // unit: "celsius",
-  currency: "EUR",
- //useGrouping: false,
-}
+// const num = 24256324.23;
+// const options = {
+//   style: "currency",
+//   // unit: "celsius",
+//   currency: "EUR",
+//  //useGrouping: false,
+// }
 
-console.log('US: ', new Intl.NumberFormat('en-US',options).format(num));
-console.log('THAI: ', new Intl.NumberFormat('th-TH',options).format(num));
-console.log('Germany: ', new Intl.NumberFormat('de-DE',options).format(num));
+// console.log('US: ', new Intl.NumberFormat('en-US',options).format(num));
+// console.log('THAI: ', new Intl.NumberFormat('th-TH',options).format(num));
+// console.log('Germany: ', new Intl.NumberFormat('de-DE',options).format(num));
+
+
+//การตั้งการหมดเวลา SET TIME OUT
+// const ingredients = ['olives' ,'']
+
+// const pizzaTimer = setTimeout((ing1, ing2) => console.log(`Here is your pizza 🍕 with
+// ${ing1} and ${ing2}`), 3000,...ingredients);
+// console.log('Waiting ...');
+
+// if(ingredients.includes('spanish')) clearTimeout(pizzaTimer)
+
+
+//setTimeout funcion 
+
+// setInterval(function(){
+//   const now = new Date();
+//   const hour = `${now.getHours()}`.padStart(2, 0);
+//   const min = `${now.getMinutes()}`.padStart(2, 0);
+//   const sec = `${now.getSeconds()}`.padStart(2, 0);
+//   console.log(hour,":", min, ":" ,sec);
+// },1000)
 
 
