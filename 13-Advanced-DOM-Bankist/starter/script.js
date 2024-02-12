@@ -248,24 +248,24 @@ document.querySelector('.nav__links').addEventListener('click',function(e) { e.p
 // true) //ถ้าใช่ true จะทำให้เมื่อเราคลิก nav จะส่งผลแต่ nav ไม่ผ่านตัวเอื่น ๆเข้าไป
 
 
-//Traving DOM
-const h1 = document.querySelector('h1');
-console.log(h1.querySelectorAll('.highlight'));
-console.log(h1.childNodes);
-console.log(h1.children);
-h1.firstElementChild.style.color = 'white';
+// //Traving DOM
+// const h1 = document.querySelector('h1');
+// console.log(h1.querySelectorAll('.highlight'));
+// console.log(h1.childNodes);
+// console.log(h1.children);
+// h1.firstElementChild.style.color = 'white';
 
-//Going upwards : parents
-console.log(h1.parentNode);
+// //Going upwards : parents
+// console.log(h1.parentNode);
 
-console.log(h1.parentElement);
-h1.closest('.header').style.background = 'var(--gradient-secondary)';
-h1.closest('h1').style.background = 'var(--gradient-primary)';
+// console.log(h1.parentElement);
+// h1.closest('.header').style.background = 'var(--gradient-secondary)';
+// h1.closest('h1').style.background = 'var(--gradient-primary)';
 
-//going sideways : siblings
-console.log(h1.previousElementSibling);
-console.log(h1.nextElementSibling); 
-console.log(h1.parentElement.children); //จะได้ h1 h4 buttons และ img ซึ่งมีค่าเท่ากับ ).
-[...h1.parentElement.children].forEach(function(el) {
-  if(el !== h1 ) el.style.transform = 'scale(0.5)'
-})
+// //going sideways : siblings
+// console.log(h1.previousElementSibling);
+// console.log(h1.nextElementSibling); 
+// console.log(h1.parentElement.children); //จะได้ h1 h4 buttons และ img ซึ่งมีค่าเท่ากับ ).
+// [...h1.parentElement.children].forEach(function(el) {
+//   if(el !== h1 ) el.style.transform = 'scale(0.5)'
+// })
