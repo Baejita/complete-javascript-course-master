@@ -1,12 +1,18 @@
 'use strict';
 
-///////////////////////////////////////
-// Modal window
 
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
+
+const btnScrollTo = document.querySelector('.btn--scroll-to');
+const section1 = document.querySelector('#section--1');
+
+///////////////////////////////////////
+// Modal window
+
+
 
 const openModal = function (e) {
   e.preventDefault();
@@ -34,7 +40,68 @@ document.addEventListener('keydown', function (e) {
 
 
 
-/////////////////////////////////////////////
+
+// Button scrolling หาตำแหน่งของ section1 เมื่อคลิก
+btnScrollTo.addEventListener('click',function(e) {
+  const s1coods = section1.getBoundingClientRect();
+  console.log(s1coods);
+  console.log(e.target.getBoundingClientRect());//หาตำแหน่งของตัวปุ่น btnScollto = Learn more
+  console.log('Current scroll (x/y', window, pageXOffset,pageYOffset); //กดตรงปุ่น้เพื่อดูว่าหน้าจอเลื่นลงมาเท่าไหร่แล้ว
+
+  console.log('Height/width viewport', document.documentElement.clientHeight, document.documentElement.clientWidth); //จะทราบว่าความกว้าง x สูง ของหน้าจอเท่าไหร่
+
+  //Scrolling
+  // window.scrollTo(s1coods
+  //   .left 
+  //   + window.pageXOffset, s1coods.top + window.pageYOffset
+  //   )
+
+  //วิธีแบบเก่า
+    // window.scrollTo({
+    //   left: s1coods.left + window.pageXOffset,
+    //   top: s1coods.top + window.pageYOffset,
+    //   behavior: 'smooth'
+    // });
+
+    //วิธีแบบใหม่การตั้งค่าเลื่อนจอแบบ Smooth
+    section1.scrollIntoView({
+      behavior: 'smooth'
+    })
+
+})
+
+////// Page navigation
+
+// document.querySelectorAll('.nav__link').forEach(function(el){
+//   el.addEventListener('click',function(e){
+//     e.preventDefault();
+
+//     console.log("LINK");// เวลาเรากดลิงค์มันจะเด่้งไปตำแหน่งนั้นๆ  เลยเราต้งป้องกันการเกิด ถ้าเราจะทำการเลื่อนแบบ smooth
+//     const id =this.getAttribute('href'); 
+//     console.log(id);
+//     document.querySelector(id).scrollIntoView({
+//       behavior: 'smooth'
+//     })
+//   })
+// })
+
+//1. Add event listeners to common parent element
+//2. Determine whate element originated the event 
+
+document.querySelector('.nav__links').addEventListener('click',function(e) { e.preventDefault();
+  
+  //Matching strategy จับคู่เพื่อป้องการการไปกดตรง ที่ไม่มช่ลิงค์แล้วเกิดข้อผิดพลาดขึ้น
+  if(e.target.classList.contains('nav__link')){
+    console.log("LINK");// เวลาเรากดลิงค์มันจะเด่้งไปตำแหน่งนั้นๆ  เลยเราต้งป้องกันการเกิด ถ้าเราจะทำการเลื่อนแบบ smooth
+    const id =e.target.getAttribute('href'); 
+    console.log(id);
+    document.querySelector(id).scrollIntoView({
+      behavior: 'smooth'
+  })
+}
+})
+
+///////////////////////////////////////////
 /////////////////////////////////////////////
 /////////////////////////////////////////////
 /// ------ Lectures -------------------------
@@ -124,37 +191,7 @@ document.addEventListener('keydown', function (e) {
 // //Don't USSE 
 // logo.className = 'Jonas'
 
-// const btnScrollTo = document.querySelector('.btn--scroll-to');
-// const section1 = document.querySelector('#section--1');
 
-// //หาตำแหน่งของ section1 เมื่อคลิก
-// btnScrollTo.addEventListener('click',function(e) {
-//   const s1coods = section1.getBoundingClientRect();
-//   console.log(s1coods);
-//   console.log(e.target.getBoundingClientRect());//หาตำแหน่งของตัวปุ่น btnScollto = Learn more
-//   console.log('Current scroll (x/y', window, pageXOffset,pageYOffset); //กดตรงปุ่น้เพื่อดูว่าหน้าจอเลื่นลงมาเท่าไหร่แล้ว
-
-//   console.log('Height/width viewport', document.documentElement.clientHeight, document.documentElement.clientWidth); //จะทราบว่าความกว้าง x สูง ของหน้าจอเท่าไหร่
-
-//   //Scrolling
-//   // window.scrollTo(s1coods
-//   //   .left 
-//   //   + window.pageXOffset, s1coods.top + window.pageYOffset
-//   //   )
-
-//   //วิธีแบบเก่า
-//     // window.scrollTo({
-//     //   left: s1coods.left + window.pageXOffset,
-//     //   top: s1coods.top + window.pageYOffset,
-//     //   behavior: 'smooth'
-//     // });
-
-//     //วิธีแบบใหม่
-//     section1.scrollIntoView({
-//       behavior: 'smooth'
-//     })
-
-// })
 
 //Lecture addEventListener
 
@@ -181,31 +218,54 @@ document.addEventListener('keydown', function (e) {
 //rgb(255,255,255)
 /// สร้างตัวแปรที่เก็บ ฟังก์ชั่น การสร้างการสุ่ม rgb (ตัวเลข ก่อน)
 
-const randomInt = (min,max) => Math.floor(Math.random()* max - min +1);
-const randomColor = () => `rgb(${randomInt(0,255)},${randomInt(0,255)},${randomInt(0,255)})`
-console.log(randomColor());
+// const randomInt = (min,max) => Math.floor(Math.random()* max - min +1);
+// const randomColor = () => `rgb(${randomInt(0,255)},${randomInt(0,255)},${randomInt(0,255)})`
+// console.log(randomColor());
 
 
-//// แล้วค่อยมาใส่ฟังก์ชั่นเมื่อกด link ให้เปลี่ยนสีตามตัวแปร randomColor
-//ถ้าคลิก element ย่อยสุดจะทำให้ parent เปลี่ยนสีตามไปด้วยเสมอ แต่ถ้า คลิกอันพ่อแม่ใหญ่กว่า เด็กๆ จะไม่เปลี่ยนตาม 
-document.querySelector('.nav__link').addEventListener('click', function(e){
- this.style.backgroundColor = randomColor()
- console.log('LINK', e.target ,e.currentTarget); //เมื่อคลิกแล้วจะหาเป้าหมายว่ากดตรงไหน
- console.log(e.currentTarget === this);
+// //// แล้วค่อยมาใส่ฟังก์ชั่นเมื่อกด link ให้เปลี่ยนสีตามตัวแปร randomColor
+// //ถ้าคลิก element ย่อยสุดจะทำให้ parent เปลี่ยนสีตามไปด้วยเสมอ แต่ถ้า คลิกอันพ่อแม่ใหญ่กว่า เด็กๆ จะไม่เปลี่ยนตาม 
+// document.querySelector('.nav__link').addEventListener('click', function(e){
+//  this.style.backgroundColor = randomColor()
+//  console.log('LINK', e.target ,e.currentTarget); //เมื่อคลิกแล้วจะหาเป้าหมายว่ากดตรงไหน
+//  console.log(e.currentTarget === this);
  
- //หยุดการส่งต่อการเกิดเหตุการ์ณ์****----------*****
- //e.stopPropagation() // โดยทั่วไปไม่ควรหยุดการ propagation 
-})
+//  //หยุดการส่งต่อการเกิดเหตุการ์ณ์****----------*****
+//  //e.stopPropagation() // โดยทั่วไปไม่ควรหยุดการ propagation 
+// })
 
-document.querySelector('.nav__links').addEventListener('click', function(e){
-  this.style.backgroundColor = randomColor()
-  console.log('CONTAINER', e.target ,e.currentTarget);
-  console.log(e.currentTarget === this);
-})
+// document.querySelector('.nav__links').addEventListener('click', function(e){
+//   this.style.backgroundColor = randomColor()
+//   console.log('CONTAINER', e.target ,e.currentTarget);
+//   console.log(e.currentTarget === this);
+// })
 
-document.querySelector('.nav').addEventListener('click', function(e){
-  this.style.backgroundColor = randomColor()
-  console.log('NAVBAR', e.target,e.currentTarget);
-  console.log(e.currentTarget === this);
-},
-true) //ถ้าใช่ true จะทำให้เมื่อเราคลิก nav จะส่งผลแต่ nav ไม่ผ่านตัวเอื่น ๆเข้าไป
+// document.querySelector('.nav').addEventListener('click', function(e){
+//   this.style.backgroundColor = randomColor()
+//   console.log('NAVBAR', e.target,e.currentTarget);
+//   console.log(e.currentTarget === this);
+// },
+// true) //ถ้าใช่ true จะทำให้เมื่อเราคลิก nav จะส่งผลแต่ nav ไม่ผ่านตัวเอื่น ๆเข้าไป
+
+
+//Traving DOM
+const h1 = document.querySelector('h1');
+console.log(h1.querySelectorAll('.highlight'));
+console.log(h1.childNodes);
+console.log(h1.children);
+h1.firstElementChild.style.color = 'white';
+
+//Going upwards : parents
+console.log(h1.parentNode);
+
+console.log(h1.parentElement);
+h1.closest('.header').style.background = 'var(--gradient-secondary)';
+h1.closest('h1').style.background = 'var(--gradient-primary)';
+
+//going sideways : siblings
+console.log(h1.previousElementSibling);
+console.log(h1.nextElementSibling); 
+console.log(h1.parentElement.children); //จะได้ h1 h4 buttons และ img ซึ่งมีค่าเท่ากับ ).
+[...h1.parentElement.children].forEach(function(el) {
+  if(el !== h1 ) el.style.transform = 'scale(0.5)'
+})
