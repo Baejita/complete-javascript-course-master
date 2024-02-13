@@ -101,6 +101,33 @@ document.querySelector('.nav__links').addEventListener('click',function(e) { e.p
 }
 })
 
+//Tabbed components แนวคิดคือ การลบ active และเพิ่ม active เข้าไป
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations')
+const tabsContent = document.querySelectorAll('.operations__content');
+
+tabsContainer.addEventListener('click', function(e) {
+  const clicked = e.target.closest('.operations__tab');//ทำให้เมื่อเรากดตัวเลขจะได้ป้องกันการเลือก แค่ 2 3  1 
+
+  //Guard clause
+  if(!clicked) return; 
+
+  //active tab
+  tabs.forEach(t => t.classList.remove('operations__tab--active'))
+
+  clicked.classList.add('operations__tab--active');
+
+  //Active content area
+  tabsContent.forEach(c => c.classList.remove('operations__content--active')); // ปิดอันที่ไม่ active ออกไป
+
+  document.querySelector(`.operations__content--${clicked.dataset.tab}`).classList.add('operations__content--active')
+})
+
+//วิธีนี้จะทำให้เมื่อเรามีหลาย tab จะทำให้การโหลดหน้าช้าลง
+// tabs.forEach(t => t.addEventListener('click',() =>
+//   console.log('TAB')
+// ));
+
 ///////////////////////////////////////////
 /////////////////////////////////////////////
 /////////////////////////////////////////////
