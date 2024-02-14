@@ -9,6 +9,11 @@ const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 const btnScrollTo = document.querySelector('.btn--scroll-to');
 const section1 = document.querySelector('#section--1');
 
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations')
+const tabsContent = document.querySelectorAll('.operations__content');
+
+const nav = document.querySelector('.nav');
 ///////////////////////////////////////
 // Modal window
 
@@ -102,9 +107,7 @@ document.querySelector('.nav__links').addEventListener('click',function(e) { e.p
 })
 
 //Tabbed components แนวคิดคือ การลบ active และเพิ่ม active เข้าไป
-const tabs = document.querySelectorAll('.operations__tab');
-const tabsContainer = document.querySelector('.operations')
-const tabsContent = document.querySelectorAll('.operations__content');
+
 
 tabsContainer.addEventListener('click', function(e) {
   const clicked = e.target.closest('.operations__tab');//ทำให้เมื่อเรากดตัวเลขจะได้ป้องกันการเลือก แค่ 2 3  1 
@@ -128,13 +131,122 @@ tabsContainer.addEventListener('click', function(e) {
 //   console.log('TAB')
 // ));
 
-///////////////////////////////////////////
-/////////////////////////////////////////////
+/// Menu fade animations
+const handleHover = function(e) {
+  if(e.target.classList.contains('nav__link')){
+    
+    const link = e.target;
+    const siblings = link.closest('.nav').querySelectorAll('.nav__link');
+    const logo = link.closest('.nav').querySelector('img');
+
+    siblings.forEach(el => {
+      if(el !==link) el.style.opacity = this;
+    })
+
+    logo.style.opacity = this;
+  }
+}
+
+nav.addEventListener('mouseover', handleHover.bind(0.5));
+nav.addEventListener('mouseout',handleHover.bind(1));
+
+//Sticky navigation
+// const initialCoords = section1.getBoundingClientRect()
+// console.log(initialCoords);
+// window.addEventListener('scroll', function(){
+//   console.log(window.scrollY);
+
+//   if(window.scrollY > initialCoords.top) nav.classList.add('sticky') ;
+//   else nav.classList.remove('sticky');
+// })
+
+// const obsCallback = function(entries,observer) {
+//   entries.forEach(entry => {
+//     console.log(entry);
+//   })
+// }
+
+// const obsOpsions = {
+//   root:null,
+//   threshold: [0, 0.2]       //หมายถึงจะเรียกฟังก์ชั่น callback เมื่อเข้าออก ถึง 0    
+//    //องค์ประกอบที่เป้าหมายตัดกัน หมายความว่า ถ้าเราเลื่อนหน้าจอลงมา 10% จะทำให้เกิดจุดตัดระหว่าง section 1 กับ viewport จะแสดงค่า intersecting จาก false เป็น ture
+// }
+
+// const observer = new IntersectionObserver(
+//   obsCallback,obsOpsions
+// );
+// observer.observe(section1)
+
+const header = document.querySelector('.header');
+const navHeight = nav.getBoundingClientRect().height; //เพื่อหาส่วนสูง
+// console.log(navHeight);
+
+const stickyNav = function(entries) {
+  const [entry] = entries;
+  // console.log(entry);
+
+  if(!entry.isIntersecting) nav.classList.add('sticky')
+  else nav.classList.remove('sticky') ; ;
+}
+const headerObserver = new IntersectionObserver(
+  stickyNav, {
+    root: null,
+    threshold: 0,
+    rootMargin: `-${navHeight}px` // เนื่องจากอยากให้มันแสดงเมื่อใกล้จะถึงให้ขนาดเท่ากับ nav bar 
+  }
+);
+
+headerObserver.observe(header);
+
+//Reveal sections การทำให้ค่อย ๆ เปิดเผย section ขึ้นมา
+const allSections = document.querySelectorAll('.section');
+
+const revealSection = function(entries, observer) {
+  const [entry] = entries;
+  console.log(entry);
+
+  if(!entry.isIntersecting) return;
+
+  entry.target.classList.remove('section--hidden');
+  observer.unobserve(entry.target);
+}
+
+const sectionObserver = new IntersectionObserver(revealSection, {
+  root: null,
+  threshold: 0.15,
+
+ })
+
+allSections.forEach(function(section){
+  sectionObserver.observe(section);
+  section.classList.add('section--hidden')
+})
+// const handleHide = function(e) {
+//   if(e.target.classList.contains('nav__link')){
+//     const link = e.target;
+//     const siblings = link.closest('.nav').querySelectorAll('.nav__link');
+//     const logo = link.closest('.nav').querySelector('img');
+
+//     siblings.forEach(el => {
+//       if(el !==link) el.style.opacity = 1;
+//     })
+
+//     logo.style.opacity = 1;
+//   }
+
+// }
+
+//การผ่าน อกิวเมนท์ เข้าไปในฟังชั่น mouseover
+
+
+
+
+
+
 /////////////////////////////////////////////
 /// ------ Lectures -------------------------
 /////////////////////////////////////////////
-/////////////////////////////////////////////
-/////////////////////////////////////////////
+
 
 // //**-- Selected Element */
 // console.log(document.documentElement);
