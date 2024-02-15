@@ -219,7 +219,7 @@ const sectionObserver = new IntersectionObserver(revealSection, {
 
 allSections.forEach(function(section){
   sectionObserver.observe(section);
-  section.classList.add('section--hidden')
+  // section.classList.add('section--hidden')
 })
 // const handleHide = function(e) {
 //   if(e.target.classList.contains('nav__link')){
@@ -239,10 +239,87 @@ allSections.forEach(function(section){
 //การผ่าน อกิวเมนท์ เข้าไปในฟังชั่น mouseover
 
 
+///LAZY loading images
+const imgTargets = document.querySelectorAll('img[data-src');
 
 
+const loadImg = function(entries, observer) {
+  const [entry] = entries;
+  
+
+  if(!entry.isIntersecting) return;
+
+  //replace src wiht data-src
+  entry.target.src = entry.target.dataset.src;
+        //ถ้าวางตรงนี้หมายความว่า  filter blur lazy-img ออก ครับ
+  entry.target.addEventListener('load',function(){
+    entry.target.classList.remove('lazy-img'); //ถ้าวางตรงนี้หมายความว่า ต้องโหลดเสร็จแล้วถึงจะเอา filter blur lazy-img ออก ครับ
+  })
+  observer.unobserve(entry.target);
+
+}
+
+const imgObserver = new IntersectionObserver(loadImg, {
+  root: null,
+  threshold: 0,
+  rootMargin: '200px', //ทำให้โหลดเร็วขึ้นก่อนที่จะเลื่อนหน้าจอ 
+
+})
+
+imgTargets.forEach(img => imgObserver.observe(img));
+
+//Slider 
+const slides = document.querySelectorAll('.slide');
+const slider = document.querySelector('.slider');
+const btnLeft = document.querySelector('.slider__btn--left');
+const btnRight = document.querySelector('.slider__btn--right');
+let curSlide = 0;
+const maxSlide = slides.length-1;
+
+slider.style.transform = 'scale(0.4) translateX(-800px)';
+slider.style.overflow = 'visible';
+
+// slides.forEach((s, i) => s.style.transform = `translateX(${100* i}%)`);
+
+//0% 100% 200% 300%
+const goToSlide = function (slide){
+  slides.forEach((s, i) => s.style.transform = `translateX(${100* (i-slide)}%)`);
+}
+goToSlide(0)
+
+//Next slide
+const nextSlide = function (){
+  if(curSlide === maxSlide) {
+    curSlide=0
+  }else {
+    curSlide++;
+  }
+  
+  goToSlide(curSlide)
+}
+
+const pevSlide = function (){
+ 
+  if(curSlide === 0) {
+    curSlide= maxSlide
+  }else {
+    curSlide--;
+  }
+
+  goToSlide(curSlide);
+}
+
+btnRight.addEventListener('click', nextSlide);
+btnLeft.addEventListener('click', pevSlide);
+//   slides.forEach((s, i) => s.style.transform = `translateX(${100* (i-curSlide)}%)`);
+// })
 
 
+// btn.addEventListener('click', function(){
+//   curSlide--;
+
+//   slides.forEach((s, i) => s.style.transform = `translateX(${100* (i-curSlide)}%)`);
+// })
 /////////////////////////////////////////////
 /// ------ Lectures -------------------------
 /////////////////////////////////////////////
