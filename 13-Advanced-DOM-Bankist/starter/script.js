@@ -203,7 +203,7 @@ const allSections = document.querySelectorAll('.section');
 
 const revealSection = function(entries, observer) {
   const [entry] = entries;
-  console.log(entry);
+  // console.log(entry);
 
   if(!entry.isIntersecting) return;
 
@@ -262,7 +262,7 @@ const loadImg = function(entries, observer) {
 const imgObserver = new IntersectionObserver(loadImg, {
   root: null,
   threshold: 0,
-  rootMargin: '200px', //ทำให้โหลดเร็วขึ้นก่อนที่จะเลื่อนหน้าจอ 
+  // rootMargin: '200px', //ทำให้โหลดเร็วขึ้นก่อนที่จะเลื่อนหน้าจอ 
 
 })
 
@@ -273,11 +273,28 @@ const slides = document.querySelectorAll('.slide');
 const slider = document.querySelector('.slider');
 const btnLeft = document.querySelector('.slider__btn--left');
 const btnRight = document.querySelector('.slider__btn--right');
+const dotContainer = document.querySelector('.dots');
+
+
 let curSlide = 0;
 const maxSlide = slides.length-1;
 
-slider.style.transform = 'scale(0.4) translateX(-800px)';
-slider.style.overflow = 'visible';
+
+
+const createDots = function(){
+  slides.forEach(function(_,i) {
+    dotContainer.insertAdjacentHTML('beforeend', `<button class = "dots__dot" data-slide="${i}"></button>`)
+  })
+}
+createDots();
+
+const activateDot = function(slide){
+  document.querySelectorAll('.dots__dot').forEach(dot )
+
+}
+
+// slider.style.transform = 'scale(0.4) translateX(-800px)';
+// slider.style.overflow = 'visible';
 
 // slides.forEach((s, i) => s.style.transform = `translateX(${100* i}%)`);
 
@@ -291,35 +308,39 @@ goToSlide(0)
 const nextSlide = function (){
   if(curSlide === maxSlide) {
     curSlide=0
-  }else {
-    curSlide++;
-  }
-  
+  }else{curSlide++;}
   goToSlide(curSlide)
 }
 
-const pevSlide = function (){
- 
+const prevSlide = function (){
   if(curSlide === 0) {
     curSlide= maxSlide
-  }else {
-    curSlide--;
-  }
-
+  }else {curSlide--;}
   goToSlide(curSlide);
 }
 
 btnRight.addEventListener('click', nextSlide);
-btnLeft.addEventListener('click', pevSlide);
-//   slides.forEach((s, i) => s.style.transform = `translateX(${100* (i-curSlide)}%)`);
-// })
+btnLeft.addEventListener('click', prevSlide);
 
 
-// btn.addEventListener('click', function(){
-//   curSlide--;
+// การสร้างกด คีย์บอด ขึ้นลง แล้วเปลี่ยนเฟรม
 
-//   slides.forEach((s, i) => s.style.transform = `translateX(${100* (i-curSlide)}%)`);
-// })
+//ทำสอบว่าเรากดปุ่มแล้วได้ค่าอะไรออกมา
+document.addEventListener('keydown', function(e){
+  // console.log(e);
+  if(e.key === 'ArrowLeft') prevSlide();
+  e.key === 'ArrowRight' && nextSlide();
+})
+
+
+//การทำให้ปุ่มสามารถกดไปหาสไลด์ที่ต้องการได้
+dotContainer.addEventListener('click', function(e){
+  if(e.target.classList.contains('dots__dot')){
+    const {slide} = e.target.dataset;
+    goToSlide(slide);
+  }
+})
+
 /////////////////////////////////////////////
 /// ------ Lectures -------------------------
 /////////////////////////////////////////////
