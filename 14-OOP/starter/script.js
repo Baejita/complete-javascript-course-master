@@ -38,4 +38,17 @@ console.log(jonas.__proto__  === Person.prototype);
 console.log(Person.prototype.isPrototypeOf(jonas));
 
 //.prototypeOfLinkedObjects
- 
+ Person.prototype.species = 'Homo Sapiens';
+ console.log(jonas.species, jack.species);
+
+ console.log(jonas.hasOwnProperty('firstName'));//คุณสมบัตินี้อยู่ในต้นแบบ 
+ console.log(jonas.hasOwnProperty('species')); //คุณสมบัตินี้ไม่ได้อยู่ใน ่jonas จริง ๆ ครับ 
+
+ console.log(jonas.__proto__);
+ //object.prototype (top of prototype chain)
+ console.log(jonas.__proto__.__proto__);
+ console.log(jonas.__proto__.__proto__.__proto__); // null
+
+ const arr = [3, 6, 3, 4, 7, 8]
+ console.log(arr.__proto__);
+ console.log(arr.__proto__ === Array.prototype);
