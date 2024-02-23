@@ -93,3 +93,87 @@
 // merdedes.brake();
 
 
+//class expression 
+// const PersonCL = class {
+
+// }
+
+//class declaration 
+class PersonCl  {
+    constructor(fullname, birthYear) {
+        this.fullname = fullname;
+        this.birthYear = birthYear;
+    }
+
+    //Methods will be Added to 
+    calcAge () {
+        console.log(2024 - this.birthYear);
+    }
+
+    greet () {
+        console.log(`Hey ${this.firstName}`)
+    }
+
+    get age() {
+        return 2024 - this.birthYear;
+    }
+
+    set fullname(name) {
+        console.log(name);
+        if(name.includes(' ')) this._fullName = name;
+        else alert(`${name} is not a full name`) 
+    } //จะยัง
+
+    get fullname(){
+        return this._fullName;
+    }
+}
+
+const walter = new PersonCl('Walter White', 1888)
+walter._fullName;
+
+const jessica = new PersonCl('Jessica Devis', 1996);
+
+console.log(jessica);
+// jessica.calcAge();
+console.log(jessica.age);
+
+console.log(jessica.__proto__ === PersonCl.prototype);
+
+//แบบ constuctor ปกติ 
+// PersonCl.prototype.greet = function() {
+//     console.log(`Hey ${this.firstName}`);
+// }
+
+jessica.greet();
+
+
+//1. Classes are NOT hoisted
+//2. Class are First-class citizes
+//3. Classes are executed in strict mode
+
+//properties ไม่มีวงเล็บ ส่วน methord มี ()
+
+
+
+
+//เรียนรู้ get และ set สำหรับ object 
+const accout = {
+    owner : 'Jonas',
+    movements: [200, 300, 530 , 120],
+
+    get latest() {
+        return this.movements.slice().pop();
+    },
+
+    set latest(mov) {
+        this.movements.push(mov);
+    }
+};
+
+console.log(accout.latest);  //properties ไม่มีวงเล็บ ส่วน methord มี ()
+
+accout.latest = 599;
+console.log(accout.movements);
+
+
