@@ -254,6 +254,7 @@ console.log(ford);
 
 */
 
+/*
 const Person = function(firstName, birthYear){
     //instant Properties
 this.firstName = firstName;
@@ -289,3 +290,56 @@ mike.calcAge();
 
 
 console.dir(Student.prototype.constructor)
+
+*/
+
+/*
+const PersonProto = {
+    calcAge () {
+        console.log(2024 - this.birthYear);
+    },
+
+    init(firstName, birthYear){
+        this.firstName = firstName;
+        this.birthYear = birthYear;
+    }
+}
+
+const steven = Object.create(PersonProto);
+const StudentProto = Object.create(PersonProto);
+
+StudentProto.init = function(firstName, birthYear, course){
+    PersonProto.init.call(this, firstName, birthYear);
+    this.course = course;
+}
+
+StudentProto.introduce = function() {
+    console.log(`My name is ${this.firstName} and I study ${this.course}.`);
+}
+
+const jay = Object.create(StudentProto);
+jay.init('Jay', 1991, 'Computer Science')
+jay.introduce();
+jay.calcAge();
+console.log(jay.__proto__);
+*/
+
+
+class Accout {
+    constructor(owner, currency, pin, ){
+        this.owner = owner;
+        this.currency = currency;
+        this.pin = pin;
+        this.movement = [];
+        this.local = navigator.language;
+
+        console.log(`Thanks for opening an account, ${this.owner}`);
+    }
+}
+
+const acc1 = new Accout('Jonas', 'Eur', 1111)
+
+acc1.movement.push(250);
+acc1.movement.push(-399);
+acc1.movement.push(750);
+console.log(acc1);
