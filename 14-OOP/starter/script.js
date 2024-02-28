@@ -324,22 +324,135 @@ jay.calcAge();
 console.log(jay.__proto__);
 */
 
+// 1) Public fields
+// 2) Private fields
+// 3) Public methods
+// 4) private methods
 
+/*
 class Accout {
+    // 1) Public fields (instance)
+    locale = navigator.language;
+    
+    //2) private fields [instance]
+    #movement = [];
+    #pin;
+
+
+
+
     constructor(owner, currency, pin, ){
         this.owner = owner;
         this.currency = currency;
-        this.pin = pin;
-        this.movement = [];
-        this.local = navigator.language;
+        this.#pin = pin;
+        //this._movement = [];
+        //this.locale = navigator.language;
 
         console.log(`Thanks for opening an account, ${this.owner}`);
+    }
+
+    // 3) Public methods
+
+    // public interface
+    getmovement() {
+       return this.#movement;
+    }
+
+    deposit (val) {
+        this.#movement.push(val);
+        return this;
+    }
+
+    withdraw(val){
+        this.deposit(-val);
+        return this;
+    }
+
+   
+
+    requestLoan (val){
+        if(this._approveLoan(val)){
+            this.deposit(val);
+            console.log(`Loan approved`);
+            return this;
+        }
+    }
+
+    // 4) private methods
+    //#approveLoan (val)  ยังไม่ใช้งานไม่ได้
+        _approveLoan (val) {
+        return true;
     }
 }
 
 const acc1 = new Accout('Jonas', 'Eur', 1111)
 
-acc1.movement.push(250);
-acc1.movement.push(-399);
-acc1.movement.push(750);
+// acc1._movement.push(250);
+// acc1._movement.push(-399);
+// acc1._movement.push(750);
+acc1.deposit(500);
+acc1.withdraw(200);
+acc1.requestLoan(1000);
+
+console.log(acc1.getmovement())
+
 console.log(acc1);
+
+console.log(acc1.movement);
+
+//Chaining
+acc1.deposit(300).deposit(500).withdraw(35).requestLoan(25000).withdraw(4000)
+console.log(acc1.getmovement());
+*/
+
+// challenge 4
+
+// const Car = function(make, speed){
+//     this.make = make;
+//     this.speed = speed;
+// }
+class CarCl {
+    constructor(make, speed){
+        this.make = make;
+        this.speed = speed;
+    }
+
+    accelerate(){
+        this.speed += 10;
+        console.log(`${this.make} is going at ${this.speed} km/hr`);
+    }
+
+    break(){
+        this.speed -= 5;
+        console.log(`${this.make} is going at ${this.speed} km/hr`);
+    }
+
+    get speedUS() {
+        return this.speed / 1.6 ;
+    }
+
+    set speedUS(speed){
+        this.speed = speed * 1.6
+    }
+}
+
+class EVCl extends CarCl {
+
+
+constructor(make, speed, charge) {
+    super( make, speed);
+    this.charge = charge;
+}
+
+chargeBattery (chargeTo) {
+    this.charge = chargeTo;
+}
+
+accelerate(){
+    this.speed += 20;
+    this.charge --;
+    console.log(`${this.make} is going at ${this.speed} km/hr, with a charge of ${this.charge} %`);
+}
+}
+const rivian = new EVCl('Ford', 155, 99)
+rivian.accelerate()
