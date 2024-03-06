@@ -6,6 +6,7 @@
 class Workout {
     date = new Date();
     id = (Date.now()+ '').slice(-10);
+    clicks = 0;
 
 
     constructor(coords, distance, duration){
@@ -22,6 +23,10 @@ class Workout {
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
         this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${months[this.date.getMonth()]} ${this.date.getDate()} `
+    }
+
+    click() {
+        this.clicks ++;
     }
 }
 
@@ -58,8 +63,8 @@ class Cycling extends Workout {
     }
  }
 
-// const run1 = new Running([39, -12], 5.2, 24, 178);
-// const cycling1 = new Cycling([39, -12], 27, 98, 523);
+const run1 = new Running([39, -12], 5.2, 24, 178);
+const cycling1 = new Cycling([39, -12], 27, 98, 523);
 
 // console.log(run1,cycling1);
 
@@ -79,13 +84,23 @@ const inputElevation = document.querySelector('.form__input--elevation');
     #map;
     #mapEvent;
     #workouts = [];
+    #mapZoomlevel = 13
 
     constructor() {
+        //get user' position
         this._getPosition();
 
+        //Get data from local storage
+        this._getLocalStorage();
+
+
+
+        //attach event handlers
         form.addEventListener('submit', this._newWorkout.bind(this))
         
         inputType.addEventListener('change', this._toggleElevationField)
+
+        containerWorkouts.addEventListener('click', this._moveToPopup.bind(this))
     }
 
     _getPosition(){
@@ -99,12 +114,12 @@ const inputElevation = document.querySelector('.form__input--elevation');
 
             const {latitude} = position.coords;
             const {longitude} = position.coords;
-            console.log(`https://www.google.co.th/maps/@${latitude},-${longitude}`);
+            
+            // console.log(`https://www.google.co.th/maps/@${latitude},-${longitude}`);
         
             const coords = [latitude, longitude];
-            console.log(coords);
            
-           this.#map = L.map('map').setView(coords, 13);
+           this.#map = L.map('map').setView(coords, this.#mapZoomlevel);
         
             L.tileLayer('https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -113,6 +128,11 @@ const inputElevation = document.querySelector('.form__input--elevation');
         
             //handig clicks on map
              this.#map.on('click', this._showForm.bind(this) )
+
+       //ที่ต้องนำมาไว้ตรงนี้เพราะร้องรอโหลดแมพให้หมดก่อนค่อยปักหมุดได้      
+        this.#workouts.forEach( work => {
+            this._renderWorkoutMarker(work);
+        });
     }
 
     _showForm(mapE){  
@@ -190,7 +210,8 @@ const inputElevation = document.querySelector('.form__input--elevation');
             //hide form and clear input fields
             this._hideForm();
 
-    
+            //set local storage to all workouts
+            this._setLocalStorage();
             
     }
 
@@ -251,6 +272,47 @@ const inputElevation = document.querySelector('.form__input--elevation');
           </li> `
 
           form.insertAdjacentHTML('afterend', html);
+    }
+
+    _moveToPopup(e){
+        const workoutEl = e.target.closest('.workout');
+
+        if(!workoutEl) return;
+
+        const workout = this.#workouts.find(work => work.id === workoutEl.dataset.id);
+
+        console.log(workout);
+
+        this.#map.setView(workout.coords, this.#mapZoomlevel, {
+            animate: true, 
+            pan: {
+                duration: 1,
+            }
+        });
+
+        //using the public interface
+        // workout.click();
+    }
+
+    _setLocalStorage(){
+        localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+    }
+
+    _getLocalStorage(){
+       const data =  JSON.parse(localStorage.getItem('workouts'));
+
+        if(!data) return;
+
+        this.#workouts = data;
+
+        this.#workouts.forEach( work => {
+            this._renderWorkout(work);
+        });
+    }
+
+    reset(){
+        localStorage.removeItem('workouts');
+        location.reload();
     }
 }
 
