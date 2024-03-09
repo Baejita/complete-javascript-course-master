@@ -20,12 +20,12 @@ const renderCountry = function(data, className = '') {
   `
 
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  // countriesContainer.style.opacity = 1;
+  countriesContainer.style.opacity = 1;
 }
 
 const renderError = function(msg){
   countriesContainer.insertAdjacentText('beforeend', msg)
-  // countriesContainer.style.opacity = 1;
+  countriesContainer.style.opacity = 1;
 }
 
 /*
@@ -154,6 +154,8 @@ getCountryAndNeighbour('USA')
 
 
 // const request = fetch('https://restcountries.com/v3.1/name/portugal')
+
+/*
 const getJSON = function(url , errorMsg = 'Something went wrong') {
  return fetch(url).then( response => { 
     if(!response.ok)
@@ -195,7 +197,7 @@ const getCountryData = function(country){
     getCountryData('australia')
   
   })
-
+*/
 
 // const getCountryData = function(country){
 // //country 1
@@ -240,5 +242,36 @@ const getCountryData = function(country){
 
 // })
 
+// Test data:
+// § Coordinates 1: 52.508, 13.381 (Latitude, Longitude)
+// § Coordinates 2: 19.037, 72.873
+// § Coordinates 3: -33.933, 18.474
 
+const whereAmI = function(lat, lng){
+  fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`)
+  .then(res =>{ 
+    if(!res.ok) throw new Error(`Problem with geocodeing ${res.status}`);
+    return res.json()})
 
+  .then(data => {
+
+    console.log(`You are in ${data.city}, ${data.countryName}`);
+
+   return fetch(`https://restcountries.com/v3.1/name/${data.countryName}`)
+  })
+  .then((res) => {
+            if(!res.ok)
+            throw new Error(`Country not found (${res.status})`)
+            
+            return res.json()
+          }
+            )
+    .then(data => renderCountry(data[0]))
+
+  .catch(err => console.error(`${err.message}`))
+  
+}
+
+whereAmI(52.508, 13.381)
+whereAmI(19.037, 72.873)
+whereAmI(-33.933, 18.474)
