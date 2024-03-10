@@ -368,6 +368,7 @@ wait(2)
   */
 
   /// Challenge 2 Of Asynchous
+  /*
   const wait = function(seconds) {
     return new Promise(function(resolve){
       setTimeout(resolve, seconds * 1000);
@@ -417,6 +418,73 @@ wait(2)
   })
     .catch(err => console.error(err));
   
+    */
     
- 
+    const getPositoin = function () {
+      return new Promise(function (resolve, reject) {
+        // navigator.geolocation.getCurrentPosition(
+        //   position => resolve(position),
+        //   err => reject(err)
+        // )
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+        
+      })
+    }
+
+     
+  const whereAmI = async function(){
+    try {//geolocation
+    const pos = await getPositoin()
+    const { latitude : lat, longitude: lng} = pos.coords
+   
+    //reverse geocoding
+    const resGeo = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`)
+    const dataGeo = await resGeo.json();
+    
+
+
+    //counstry data //
+
+    //fetch(`https://restcountries.com/v3.1/name/${country}`).then(res => console.log(res));
+
+    const res = await fetch(`https://restcountries.com/v3.1/name/${dataGeo.countryName}`)
+
+    const data = await res.json();
+    
+    renderCountry(data[0])
   
+      return `You are in ${dataGeo.city} and ${dataGeo.country}.`
+  } 
+    catch(err) {
+      console.log(`${err}`);
+      renderError(`🛑 ${err.message}`)
+
+      //Reject promise returned from async function
+      throw err;
+
+    }
+  }
+
+  /*
+  console.log('1: Will get location');
+  // const city = whereAmI();
+  // console.log(city);
+  whereAmI()
+  .then(city => console.log(`2: ${city}`))
+  .catch(err=> console.log(`2: ${err.message}`))
+  .finally(() => console.log('3: Finished getting location'));
+  */
+
+  //อีกวิธีโดยการใช้ async และ awiat
+console.log('1: Will get location');
+(async function(){
+  try{
+    const city = await whereAmI();
+    console.log(`2: ${city}`)
+  } catch {
+    console.log(`2: ${err.message}`)
+  }
+
+  console.log('3: Finished getting location')
+  
+})();
