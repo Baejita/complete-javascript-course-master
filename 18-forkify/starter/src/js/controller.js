@@ -1,47 +1,49 @@
+import * as model from './model.js'
+import recipeView from './views/recipeVeiw.js';
+
+
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
+
 const recipeContainer = document.querySelector('.recipe');
 
-const timeout = function (s) {
-  return new Promise(function (_, reject) {
-    setTimeout(function () {
-      reject(new Error(`Request took too long! Timeout after ${s} second`));
-    }, s * 1000);
-  });
-};
+
 
 // https://forkify-api.herokuapp.com/v2
 
 ///////////////////////////////////////
 
-const showRecipe = async function() {
+
+
+
+const controlRecipes = async function() {
  try {
-  // const res = await fetch('https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc886');
-  const res = await fetch('https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bcfb2'
-  
-  );
-  const data = await res.json();
-  
-  if(!res.ok) throw new Error(`${data.message} (${res.status})`);
-  
-  console.log(res, data);
 
-  //สร้างต้นแบบการดึงข้อมูลออกมา 
-  let {recipe} = data.data;
-  recipe = {
-    id: recipe.id,
-    title: recipe.title,
-    publisher: recipe.publisher,
-    sourceUrl: recipe.source_url,
-    image: recipe.image_url,
-    servings: recipe.servings,
-    cookingTime: recipe.cooking_time,
-    ingredients: recipe.ingredients
-  }
-  console.log(recipe);
+  const id = window.location.hash.slice(1);
+  console.log(id);
 
+  if(!id) return;
+     recipeView.renderSpinner(); //นำฟังชั่นมาใส่ตรงนี้เพื่อให้เกิดก่อนการโหลดข้อมูล 
+
+  //1. Loading recipe
+    await model.loadRecipe(id)
+    
+ 
+//2. rendering recipe
+recipeView.render(model.state.recipe)
 
  }catch (err) {
-  alert(err);
+  recipeView.renderError()
  }
+}
+
+
+//----------------finish---controlRecipes---------------------------
+
+
+const init = function() {
+  recipeView.addhandlerRender(controlRecipes);
 
 }
-showRecipe();
+
+init();
