@@ -8,6 +8,9 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { async } from 'regenerator-runtime';
 
+if(module.hot) {
+  module.hot.accept();
+}
 
 // https://forkify-api.herokuapp.com/v2
 
@@ -18,7 +21,7 @@ import { async } from 'regenerator-runtime';
 
 const controlRecipes = async function() {
  try {
-  resultVeiw.renderSpinner()
+  // resultVeiw.renderSpinner()
 
   const id = window.location.hash.slice(1);
   // console.log(id);
@@ -42,6 +45,8 @@ recipeView.render(model.state.recipe)
 //----------------finish---controlRecipes---------------------------
 const controlSearchResult = async function(){
   try {
+    // resultVeiw.renderSpinner();
+
     // 1) Get searsh query
     const query = searchVeiw.getQuery();
     if(!query) return;
@@ -53,7 +58,8 @@ const controlSearchResult = async function(){
 
     //3)render results
   //  await model.loadSearchResults('pizza')
-    console.log(model.state.search.results);
+    // console.log(model.state.search.results);
+    resultVeiw.render(model.state.search.results);
   }catch(err) {
     console.log(err);
   }
