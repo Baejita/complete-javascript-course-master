@@ -2,12 +2,12 @@ import * as model from './model.js'
 import recipeView from './views/recipeVeiw.js';
 import searchVeiw from './views/searchVeiw.js';
 import resultVeiw  from './views/resultVeiw.js';
-
+import paginationVeiw from './views/paginationVeiw.js';
+import bookmarksVeiw from './views/bookmarksVeiw.js';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { async } from 'regenerator-runtime';
-import paginationVeiw from './views/paginationVeiw.js';
 
 // if(module.hot) {
 //   module.hot.accept();
@@ -32,6 +32,8 @@ const controlRecipes = async function() {
 
      //0 Update result view to mark selected search results
      resultVeiw.update(model.getSearchResultsPage());
+     
+     bookmarksVeiw.update(model.state.bookmarks);
 
 
   //1. Loading recipe
@@ -96,10 +98,15 @@ const controlServings = function(newServings) {
 }
 
 const controlAddBookmark = function(){
+  // add/remove bookmark
   if(!model.state.recipe.bookmarked) model.addBookMark(model.state.recipe)
   else model.deleteBookmark(model.state.recipe.id)
     // console.log(model.state.recipe);
+    // Update recipe veiw
     recipeView.update(model.state.recipe)
+
+    // 3 render bookmark
+    bookmarksVeiw.render(model.state.bookmarks)
 }
 
 
