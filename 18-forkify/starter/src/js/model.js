@@ -1,5 +1,5 @@
 import {async} from 'regenerator-runtime';
-import { API_URL } from './config.js';
+import { API_URL, RESULT_PER_PAGE } from './config.js';
 import { getJSON } from './views/helpers.js';
 
 
@@ -8,6 +8,8 @@ export const state = {
     search:{
         query: '',
         results: [],
+        page:1,
+        resultsPerPage: RESULT_PER_PAGE,
     },
 
 };
@@ -57,4 +59,25 @@ export const loadSearchResults = async function (query) {
         console.error(`${err}`);
         throw err;
     }
+}
+
+
+    export const getSearchResultsPage = function (page = state.search.page) {
+     state.search.page = page;   
+
+
+    const start = (page - 1) * state.search.resultsPerPage; //0
+    const end = page * state.search.resultsPerPage; //9
+    return state.search.results.slice(start, end);
+}
+
+export const updateServings = function (newServings) {
+    //เข้าถึงส่วนผสมและแปลงสัดส่วน
+        state.recipe.ingredients.forEach(ing  => {
+            ing.quantity = ing.quantity * newServings /state.recipe.servings;
+            // .newQt = oldQt * newServing / oldServing 
+
+        });
+        //update ผลลัพธ์ใหม่เข้าไปแทนตัวเดิม
+        state.recipe.servings = newServings;
 }

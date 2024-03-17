@@ -6,7 +6,7 @@ class ResultView extends Veiw{
     _errorMessage = `No recipe found for your query! Please try again`;
     _message = '';
     _generateMarkup(){
-        console.log(this._data);
+        // console.log(this._data);
         return this._data.map(this._generateMarkupPreview).join('');
         
     }
