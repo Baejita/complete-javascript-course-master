@@ -30,6 +30,10 @@ const controlRecipes = async function() {
   if(!id) return;
      recipeView.renderSpinner(); //นำฟังชั่นมาใส่ตรงนี้เพื่อให้เกิดก่อนการโหลดข้อมูล 
 
+     //0 Update result view to mark selected search results
+     resultVeiw.update(model.getSearchResultsPage());
+
+
   //1. Loading recipe
     await model.loadRecipe(id)
     
@@ -88,15 +92,24 @@ const controlServings = function(newServings) {
   // Update the recipe serving (in state)
   model.updateServings(newServings);
   // Update the recipe veiw
-  recipeView.render(model.state.recipe)
+  recipeView.update(model.state.recipe)
 }
+
+const controlAddBookmark = function(){
+  if(!model.state.recipe.bookmarked) model.addBookMark(model.state.recipe)
+  else model.deleteBookmark(model.state.recipe.id)
+    // console.log(model.state.recipe);
+    recipeView.update(model.state.recipe)
+}
+
 
 
 const init = function() {
   recipeView.addhandlerRender(controlRecipes);
-  recipeView.addHandlerUpdateServings(controlServings)
-  searchVeiw.addHandlerSearch(controlSearchResult)
-  paginationVeiw.addHandlerClick(controlPagination)
+  recipeView.addHandlerUpdateServings(controlServings);
+  recipeView.addHandlerAddBookmark(controlAddBookmark);
+  searchVeiw.addHandlerSearch(controlSearchResult);
+  paginationVeiw.addHandlerClick(controlPagination);
   
 }
 

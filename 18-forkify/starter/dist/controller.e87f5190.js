@@ -954,7 +954,7 @@ var getJSON = exports.getJSON = /*#__PURE__*/function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateServings = exports.state = exports.loadSearchResults = exports.loadRecipe = exports.getSearchResultsPage = void 0;
+exports.updateServings = exports.state = exports.loadSearchResults = exports.loadRecipe = exports.getSearchResultsPage = exports.deleteBookmark = exports.addBookMark = void 0;
 var _regeneratorRuntime2 = require("regenerator-runtime");
 var _config = require("./config.js");
 var _helpers = require("./views/helpers.js");
@@ -969,7 +969,8 @@ var state = exports.state = {
     results: [],
     page: 1,
     resultsPerPage: _config.RESULT_PER_PAGE
-  }
+  },
+  bookmarks: []
 };
 var loadRecipe = exports.loadRecipe = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(id) {
@@ -996,18 +997,21 @@ var loadRecipe = exports.loadRecipe = /*#__PURE__*/function () {
             ingredients: recipe.ingredients
           };
           // console.log(state.recipe);
-          _context.next = 12;
+          if (state.bookmarks.some(function (bookmark) {
+            return bookmark.id === id;
+          })) state.recipe.bookmarked = true;else state.recipe.bookmarked = false;
+          _context.next = 13;
           break;
-        case 8:
-          _context.prev = 8;
+        case 9:
+          _context.prev = 9;
           _context.t0 = _context["catch"](0);
           console.error("".concat(_context.t0));
           throw _context.t0;
-        case 12:
+        case 13:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[0, 8]]);
+    }, _callee, null, [[0, 9]]);
   }));
   return function loadRecipe(_x) {
     return _ref.apply(this, arguments);
@@ -1034,19 +1038,20 @@ var loadSearchResults = exports.loadSearchResults = /*#__PURE__*/function () {
               publisher: rec.publisher
             };
           });
+          state.search.page = 1;
           // console.log(state.search.results);
-          _context2.next = 13;
+          _context2.next = 14;
           break;
-        case 9:
-          _context2.prev = 9;
+        case 10:
+          _context2.prev = 10;
           _context2.t0 = _context2["catch"](0);
           console.error("".concat(_context2.t0));
           throw _context2.t0;
-        case 13:
+        case 14:
         case "end":
           return _context2.stop();
       }
-    }, _callee2, null, [[0, 9]]);
+    }, _callee2, null, [[0, 10]]);
   }));
   return function loadSearchResults(_x2) {
     return _ref2.apply(this, arguments);
@@ -1068,6 +1073,23 @@ var updateServings = exports.updateServings = function updateServings(newServing
   //update ผลลัพธ์ใหม่เข้าไปแทนตัวเดิม
   state.recipe.servings = newServings;
 };
+var addBookMark = exports.addBookMark = function addBookMark(recipe) {
+  //Add bookmarks
+  state.bookmarks.push(recipe);
+
+  // mark current recipe as bookmark
+  if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+  console.log(state.bookmarks);
+};
+var deleteBookmark = exports.deleteBookmark = function deleteBookmark(id) {
+  var index = state.bookmarks.findIndex(function (el) {
+    return el.id === id;
+  });
+  // console.log(index);
+  state.bookmarks.splice(index, 1);
+  if (id === state.recipe.id) state.recipe.bookmarked = false;
+};
+deleteBookmark();
 },{"regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./config.js":"src/js/config.js","./views/helpers.js":"src/js/views/helpers.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";
 },{}],"src/js/views/Veiw.js":[function(require,module,exports) {
@@ -1104,6 +1126,36 @@ var Veiw = exports.default = /*#__PURE__*/function () {
       var markup = this._generateMarkup();
       this._clear();
       this._parentElement.insertAdjacentHTML('afterbegin', markup);
+    }
+
+    //อัพเดทแบบไม่ต้องให้เพจโหลดสิ่งอื่นที่ไม่ได้เปลี่ยนแปลง 
+  }, {
+    key: "update",
+    value: function update(data) {
+      this._data = data;
+      var newmarkup = this._generateMarkup();
+      var newDOM = document.createRange().createContextualFragment(newmarkup);
+      var newElements = Array.from(newDOM.querySelectorAll('*'));
+      var curElements = Array.from(this._parentElement.querySelectorAll('*'));
+      // console.log(newElements);
+      // console.log(curElements);
+
+      newElements.forEach(function (newEl, i) {
+        var _newEl$firstChild;
+        var curEl = curElements[i];
+        // console.log(curEl, newEl.isEqualNode(curEl));
+
+        //update Changed TEXt
+        if (!newEl.isEqualNode(curEl) && ((_newEl$firstChild = newEl.firstChild) === null || _newEl$firstChild === void 0 ? void 0 : _newEl$firstChild.nodeValue.trim()) !== '') {
+          // console.log(newEl.firstChild.nodeValue.trim());
+          curEl.textContent = newEl.textContent;
+        }
+
+        //update Changed Attributes
+        if (!newEl.isEqualNode(curEl)) Array.from(newEl.attributes).forEach(function (attr) {
+          return curEl.setAttribute(attr.name, attr.value);
+        });
+      });
     }
   }, {
     key: "_clear",
@@ -1557,10 +1609,19 @@ var RecipeView = /*#__PURE__*/function (_Veiw) {
       });
     }
   }, {
+    key: "addHandlerAddBookmark",
+    value: function addHandlerAddBookmark(handler) {
+      this._parentElement.addEventListener('click', function (e) {
+        var btn = e.target.closest('.btn--bookmark');
+        if (!btn) return;
+        handler();
+      });
+    }
+  }, {
     key: "_generateMarkup",
     value: function _generateMarkup() {
       // console.log(this._data);
-      return "\n<figure class=\"recipe__fig\">\n<img src=\"".concat(this._data.image, "\" alt=\"").concat(this._data.title, "\" class=\"recipe__img\" />\n<h1 class=\"recipe__title\">\n  <span>").concat(this._data.title, "</span>\n</h1>\n</figure>\n\n<div class=\"recipe__details\">\n<div class=\"recipe__info\">\n  <svg class=\"recipe__info-icon\">\n    <use href=\"").concat(_icons.default, "#icon-clock\"></use>\n  </svg>\n  <span class=\"recipe__info-data recipe__info-data--minutes\">").concat(this._data.cookingTime, "</span>\n  <span class=\"recipe__info-text\">minutes</span>\n</div>\n<div class=\"recipe__info\">\n  <svg class=\"recipe__info-icon\">\n    <use href=\"").concat(_icons.default, "#icon-users\"></use>\n  </svg>\n  <span class=\"recipe__info-data recipe__info-data--people\">").concat(this._data.servings, "</span>\n  <span class=\"recipe__info-text\">servings</span>\n\n  <div class=\"recipe__info-buttons\">\n    <button class=\"btn--tiny btn--update-servings\" data-update-to=\"").concat(this._data.servings - 1, "\">\n      <svg>\n        <use href=\"").concat(_icons.default, "#icon-minus-circle\"></use>\n      </svg>\n    </button>\n\n    <button class=\"btn--tiny btn--update-servings\" data-update-to=\"").concat(this._data.servings + 1, "\">\n      <svg>\n        <use href=\"").concat(_icons.default, "#icon-plus-circle\"></use>\n      </svg>\n    </button>\n  </div>\n</div>\n\n<div class=\"recipe__user-generated\">\n  \n</div>\n<button class=\"btn--round\">\n  <svg class=\"\">\n    <use href=\"").concat(_icons.default, "#icon-bookmark-fill\"></use>\n  </svg>\n</button>\n\n\n\n</div>\n\n<div class=\"recipe__ingredients\">\n<h2 class=\"heading--2\">Recipe ingredients</h2>\n<ul class=\"recipe__ingredient-list\">\n\n  ").concat(this._data.ingredients.map(this._generateMarkupIntregient).join(''), "\n    \n\n</div>\n\n<div class=\"recipe__directions\">\n<h2 class=\"heading--2\">How to cook it</h2>\n<p class=\"recipe__directions-text\">\n  This recipe was carefully designed and tested by\n  <span class=\"recipe__publisher\">").concat(this._data.publisher, "</span>. Please check out\n  directions at their website.\n</p>\n<a\n  class=\"btn--small recipe__btn\"\n  href=\"").concat(this._data.sourceUrl, "\"\n  target=\"_blank\"\n>\n  <span>Directions</span>\n  <svg class=\"search__icon\">\n    <use href=\"").concat(_icons.default, "#icon-arrow-right\"></use>\n  </svg>\n</a>\n</div>");
+      return "\n<figure class=\"recipe__fig\">\n<img src=\"".concat(this._data.image, "\" alt=\"").concat(this._data.title, "\" class=\"recipe__img\" />\n<h1 class=\"recipe__title\">\n  <span>").concat(this._data.title, "</span>\n</h1>\n</figure>\n\n<div class=\"recipe__details\">\n<div class=\"recipe__info\">\n  <svg class=\"recipe__info-icon\">\n    <use href=\"").concat(_icons.default, "#icon-clock\"></use>\n  </svg>\n  <span class=\"recipe__info-data recipe__info-data--minutes\">").concat(this._data.cookingTime, "</span>\n  <span class=\"recipe__info-text\">minutes</span>\n</div>\n<div class=\"recipe__info\">\n  <svg class=\"recipe__info-icon\">\n    <use href=\"").concat(_icons.default, "#icon-users\"></use>\n  </svg>\n  <span class=\"recipe__info-data recipe__info-data--people\">").concat(this._data.servings, "</span>\n  <span class=\"recipe__info-text\">servings</span>\n\n  <div class=\"recipe__info-buttons\">\n    <button class=\"btn--tiny btn--update-servings\" data-update-to=\"").concat(this._data.servings - 1, "\">\n      <svg>\n        <use href=\"").concat(_icons.default, "#icon-minus-circle\"></use>\n      </svg>\n    </button>\n\n    <button class=\"btn--tiny btn--update-servings\" data-update-to=\"").concat(this._data.servings + 1, "\">\n      <svg>\n        <use href=\"").concat(_icons.default, "#icon-plus-circle\"></use>\n      </svg>\n    </button>\n  </div>\n</div>\n\n<div class=\"recipe__user-generated\">\n  \n</div>\n<button class=\"btn--round btn--bookmark\">\n  <svg class=\"\">\n    <use href=\"").concat(_icons.default, "#icon-bookmark").concat(this._data.bookmarked ? '-fill' : '', "\"></use>\n  </svg>\n</button>\n\n\n\n</div>\n\n<div class=\"recipe__ingredients\">\n<h2 class=\"heading--2\">Recipe ingredients</h2>\n<ul class=\"recipe__ingredient-list\">\n\n  ").concat(this._data.ingredients.map(this._generateMarkupIntregient).join(''), "\n    \n\n</div>\n\n<div class=\"recipe__directions\">\n<h2 class=\"heading--2\">How to cook it</h2>\n<p class=\"recipe__directions-text\">\n  This recipe was carefully designed and tested by\n  <span class=\"recipe__publisher\">").concat(this._data.publisher, "</span>. Please check out\n  directions at their website.\n</p>\n<a\n  class=\"btn--small recipe__btn\"\n  href=\"").concat(this._data.sourceUrl, "\"\n  target=\"_blank\"\n>\n  <span>Directions</span>\n  <svg class=\"search__icon\">\n    <use href=\"").concat(_icons.default, "#icon-arrow-right\"></use>\n  </svg>\n</a>\n</div>");
     }
   }, {
     key: "_generateMarkupIntregient",
@@ -1661,7 +1722,8 @@ var ResultView = /*#__PURE__*/function (_Veiw) {
   }, {
     key: "_generateMarkupPreview",
     value: function _generateMarkupPreview(result) {
-      return "\n        <li class=\"preview\">\n        <a class=\"preview__link \" href=\"#".concat(result.id, "\">\n          <figure class=\"preview__fig\">\n            <img src=\"").concat(result.image, "\" alt=\"Test\" />\n          </figure>\n          <div class=\"preview__data\">\n            <h4 class=\"preview__title\">").concat(result.title, "</h4>\n            <p class=\"preview__publisher\">").concat(result.publisher, "</p>\n            </div>\n        </a>\n      </li>");
+      var id = window.location.hash.slice(1);
+      return "\n        <li class=\"preview\">\n        <a class=\"preview__link  ".concat(result.id === id ? 'preview__link--active' : '', " \" href=\"#").concat(result.id, "\">\n          <figure class=\"preview__fig\">\n            <img src=\"").concat(result.image, "\" alt=\"Test\" />\n          </figure>\n          <div class=\"preview__data\">\n            <h4 class=\"preview__title\">").concat(result.title, "</h4>\n            <p class=\"preview__publisher\">").concat(result.publisher, "</p>\n            </div>\n        </a>\n      </li>");
     }
   }]);
   return ResultView;
@@ -18334,25 +18396,28 @@ var controlRecipes = /*#__PURE__*/function () {
         case 4:
           _recipeVeiw.default.renderSpinner(); //นำฟังชั่นมาใส่ตรงนี้เพื่อให้เกิดก่อนการโหลดข้อมูล 
 
+          //0 Update result view to mark selected search results
+          _resultVeiw.default.update(model.getSearchResultsPage());
+
           //1. Loading recipe
-          _context.next = 7;
+          _context.next = 8;
           return model.loadRecipe(id);
-        case 7:
+        case 8:
           //2. rendering recipe
           _recipeVeiw.default.render(model.state.recipe);
 
           // controlServings();
-          _context.next = 13;
+          _context.next = 14;
           break;
-        case 10:
-          _context.prev = 10;
+        case 11:
+          _context.prev = 11;
           _context.t0 = _context["catch"](0);
           _recipeVeiw.default.renderError();
-        case 13:
+        case 14:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[0, 10]]);
+    }, _callee, null, [[0, 11]]);
   }));
   return function controlRecipes() {
     return _ref.apply(this, arguments);
@@ -18418,11 +18483,17 @@ var controlServings = function controlServings(newServings) {
   // Update the recipe serving (in state)
   model.updateServings(newServings);
   // Update the recipe veiw
-  _recipeVeiw.default.render(model.state.recipe);
+  _recipeVeiw.default.update(model.state.recipe);
+};
+var controlAddBookmark = function controlAddBookmark() {
+  if (!model.state.recipe.bookmarked) model.addBookMark(model.state.recipe);else model.deleteBookmark(model.state.recipe.id);
+  // console.log(model.state.recipe);
+  _recipeVeiw.default.update(model.state.recipe);
 };
 var init = function init() {
   _recipeVeiw.default.addhandlerRender(controlRecipes);
   _recipeVeiw.default.addHandlerUpdateServings(controlServings);
+  _recipeVeiw.default.addHandlerAddBookmark(controlAddBookmark);
   _searchVeiw.default.addHandlerSearch(controlSearchResult);
   _paginationVeiw.default.addHandlerClick(controlPagination);
 };
@@ -18452,7 +18523,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50176" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "4668" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

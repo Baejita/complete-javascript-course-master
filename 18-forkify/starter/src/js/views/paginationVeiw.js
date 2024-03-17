@@ -15,6 +15,8 @@ class PaginationView extends Veiw{
 
     }
 
+    
+
     _generateMarkup(){
 
         const currentPage = this._data.page;
