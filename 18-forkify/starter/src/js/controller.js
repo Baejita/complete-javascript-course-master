@@ -1,4 +1,5 @@
 import * as model from './model.js'
+
 import recipeView from './views/recipeVeiw.js';
 import searchVeiw from './views/searchVeiw.js';
 import resultVeiw  from './views/resultVeiw.js';
@@ -8,19 +9,24 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { async } from 'regenerator-runtime';
 import addRecipeView from './views/addRecipeView.js';
+import { MODAL_CLOSE_SEC } from './config.js';
 // if(module.hot) {
 //   module.hot.accept();
 // }
 
 // https://forkify-api.herokuapp.com/v2
+//dcf0503a-1722-4e16-8df9-eb5ee9685997
 
 ///////////////////////////////////////
 
 
-
+const controlBookmarks = function(){
+  bookmarksVeiw.render(model.state.bookmarks)
+}
 
 const controlRecipes = async function() {
  try {
+  
   // resultVeiw.renderSpinner()
 
   const id = window.location.hash.slice(1);
@@ -37,12 +43,8 @@ const controlRecipes = async function() {
      bookmarksVeiw.update(model.state.bookmarks);
      
      await model.loadRecipe(id)
-     
-     
-     //3. rendering recipe
      recipeView.render(model.state.recipe)
      
-     // controlServings();
      
  }catch (err) {
   recipeView.renderError()
@@ -109,8 +111,40 @@ const controlAddBookmark = function(){
     bookmarksVeiw.render(model.state.bookmarks)
 }
 
-const controlBookmarks = function(){
-  bookmarksVeiw.render(model.state.bookmarks)
+
+
+const controlAddRecipe = async function(newRecipe){
+  
+  try{
+    addRecipeView.renderSpinner();
+
+    await model.uploadRecipe(newRecipe)
+    console.log(model.state.recipe);
+
+    
+     //3. rendering recipe
+     recipeView.render(model.state.recipe)
+     
+    // Success message 
+    addRecipeView.renderMesage();
+
+    //Render bookmarks view
+    bookmarksVeiw.render(model.state.bookmarks)
+
+    //change ID in URL 
+    window.history.pushState(null,'', `#${model.state.recipe.id}`);
+    //window.history.back();
+
+     //close form window;
+     setTimeout(function () {
+      addRecipeView.toggleWindow();
+     }, MODAL_CLOSE_SEC * 1000);
+  }catch(err){
+    console.log('✌', err);
+    addRecipeView.renderError(err.message)
+  }
+
+  //upload the new recipe data
 }
 
 const init = function() {
@@ -120,6 +154,7 @@ const init = function() {
   recipeView.addHandlerAddBookmark(controlAddBookmark);
   searchVeiw.addHandlerSearch(controlSearchResult);
   paginationVeiw.addHandlerClick(controlPagination);
+  addRecipeView.addHandlerUpload(controlAddRecipe);
   
 }
 

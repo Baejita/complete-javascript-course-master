@@ -1,6 +1,6 @@
 import {async} from 'regenerator-runtime';
-import { API_URL, RESULT_PER_PAGE } from './config.js';
-import { getJSON } from './views/helpers.js';
+import { API_URL, RESULT_PER_PAGE, KEY} from './config.js';
+import { AJAX} from './views/helpers.js';
 
 
 export const state = {
@@ -14,16 +14,9 @@ export const state = {
     bookmarks : [],
 };
 
-export const loadRecipe = async function(id) {
-    try{
-        const data = await  getJSON(`${API_URL}/${id}`);
-        
-        
-        // console.log(res, data);
-        
-        //สร้างต้นแบบการดึงข้อมูลออกมา 
-        const  {recipe} = data.data;
-        state.recipe = {
+const createRecipeObject = function(data){
+    const  {recipe} = data.data;
+        return {
             id: recipe.id,
             title: recipe.title,
             publisher: recipe.publisher,
@@ -31,8 +24,21 @@ export const loadRecipe = async function(id) {
             image: recipe.image_url,
             servings: recipe.servings,
             cookingTime: recipe.cooking_time,
-            ingredients: recipe.ingredients
+            ingredients: recipe.ingredients,
+            ...(recipe.key && {key: recipe.key}),
+            //วิธีเพิ่ม object ใหม่ แบบดีสุด ๆ
         }
+}
+
+export const loadRecipe = async function(id) {
+    try{
+        const data = await  AJAX(`${API_URL}/${id}?key=${KEY}`);
+        
+        state.recipe = createRecipeObject(data);
+        // console.log(res, data);
+        
+        //สร้างต้นแบบการดึงข้อมูลออกมา 
+        
         // console.log(state.recipe);
         if(state.bookmarks.some(bookmark => bookmark.id === id))
             state.recipe.bookmarked = true;
@@ -48,7 +54,7 @@ export const loadRecipe = async function(id) {
 export const loadSearchResults = async function (query) {
     try{
         state.search.query = query;
-        const data = await getJSON(`${API_URL}?search=${query}`);
+        const data = await AJAX(`${API_URL}?search=${query}&key=${KEY}`);
         console.log(data);
         
         state.search.results= data.data.recipes.map( rec => {
@@ -57,6 +63,7 @@ export const loadSearchResults = async function (query) {
                 title: rec.title,
                 image: rec.image_url,
                 publisher: rec.publisher,
+                ...(rec.key && {key: rec.key}),
             }
         })
         state.search.page = 1;
@@ -124,3 +131,37 @@ const clearBookmarks = function () {
     localStorage.clear('bookmarks');
 }
 // clearBookmarks ();
+
+export const uploadRecipe = async function(newRecipe) { 
+    try {
+        console.log(Object.entries(newRecipe));
+        const ingredients = Object.entries(newRecipe).filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '')
+        .map(ing => {
+            const ingArr = ing[1].split(',').map(el => el.trim())
+            // const ingArr = ing[1].replaceAll(' ', '').split(',');
+            if(ingArr.length !==3) throw new Error('WrongIngredient Format Please use the correct format:D')
+    
+    
+            const [quantity, unit, description] = ingArr;
+            return {quantity: quantity ? +quantity: null, unit, description};
+        });
+        
+        const recipe= {
+            title: newRecipe.title,
+            publisher: newRecipe.publisher,
+            source_url: newRecipe.sourceUrl,
+            image_url: newRecipe.image,
+            servings: newRecipe.servings,
+            cooking_time: newRecipe.cookingTime,
+            ingredients: ingredients
+        }
+        const data = await AJAX(`${API_URL}?key=${KEY}`, recipe)
+        state.recipe = createRecipeObject(data);
+
+        addBookMark(state.recipe)
+
+    }catch (err) {
+        throw err;
+    }
+   
+}
