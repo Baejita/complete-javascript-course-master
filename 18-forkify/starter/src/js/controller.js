@@ -4,11 +4,10 @@ import searchVeiw from './views/searchVeiw.js';
 import resultVeiw  from './views/resultVeiw.js';
 import paginationVeiw from './views/paginationVeiw.js';
 import bookmarksVeiw from './views/bookmarksVeiw.js';
-
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { async } from 'regenerator-runtime';
-
+import addRecipeView from './views/addRecipeView.js';
 // if(module.hot) {
 //   module.hot.accept();
 // }
@@ -33,20 +32,21 @@ const controlRecipes = async function() {
      //0 Update result view to mark selected search results
      resultVeiw.update(model.getSearchResultsPage());
      
+     
+     //1. Loading recipe
      bookmarksVeiw.update(model.state.bookmarks);
-
-
-  //1. Loading recipe
-    await model.loadRecipe(id)
-    
- 
-//2. rendering recipe
-recipeView.render(model.state.recipe)
-
-// controlServings();
-
+     
+     await model.loadRecipe(id)
+     
+     
+     //3. rendering recipe
+     recipeView.render(model.state.recipe)
+     
+     // controlServings();
+     
  }catch (err) {
   recipeView.renderError()
+  console.error(err);
  }
 
 }
@@ -109,9 +109,12 @@ const controlAddBookmark = function(){
     bookmarksVeiw.render(model.state.bookmarks)
 }
 
-
+const controlBookmarks = function(){
+  bookmarksVeiw.render(model.state.bookmarks)
+}
 
 const init = function() {
+  bookmarksVeiw.addHanderRender(controlBookmarks);
   recipeView.addhandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerAddBookmark(controlAddBookmark);

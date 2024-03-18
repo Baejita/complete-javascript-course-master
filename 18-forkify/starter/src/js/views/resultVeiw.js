@@ -7,7 +7,7 @@ class ResultView extends Veiw{
     _errorMessage = `No recipe found for your query! Please try again`;
     _message = '';
     _generateMarkup() {
-      console.log(this._data); // logs the data passed to the view
+      // console.log(this._data); // logs the data passed to the view
       return this._data.map(result => preveiwVeiw.render(result, false)).join('')
     }
 }
